@@ -1,6 +1,6 @@
 config = {
-    standalone = false, -- if you're using ND Framework keep this false. It will use your money and pay for gas.
-    jerryCanPrice = 100, -- jery cans can be purchased from the gas statoin.
+    standalone = true, -- if you're using ND Framework keep this false. It will use your money and pay for gas.
+    jerryCanPrice = 100, -- Jerry cans can be purchased from the gas statoin.
     jerryCanrefillCost = 50, -- The price of the jerrycans refill, this will be calculated and adjusted to how much is left in it.
     fuelCostMultiplier = 1.0, -- 2.0 will double the price of fuel and 1.5 will increase it by half.
 
