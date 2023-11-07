@@ -38,9 +38,12 @@ local nozzleBasedOnClass = {
 }
 
 -- ND Core object.
-if not config.standalone then
-    NDCore = exports["ND_Core"]:GetCoreObject()
-end
+CreateThread(function()
+    repeat
+        QBCore = exports["qb-core"]:GetCoreObject()
+        Wait(100)
+    until QBCore ~= nil
+end)
 
 -- Setting the electric vehicle config keys to hashes.
 for _, vehHash in pairs(config.electricVehicles) do
@@ -247,6 +250,7 @@ CreateThread(function()
                 end
             else
                 local cost = 0
+                local PlayerData = QBCore.Functions.GetPlayerData()
                 while vehicleFueling do
                     local fuel = GetFuel(vehicleFueling)
                     if not DoesEntityExist(vehicleFueling) then
@@ -255,14 +259,12 @@ CreateThread(function()
                     end
                     fuel = GetFuel(vehicleFueling)
                     cost = cost + ((2.0 / classMultiplier) * config.fuelCostMultiplier) - math.random(0, 100) / 100
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank < cost then
-                            SendNUIMessage({
-                                type = "warn"
-                            })
-                            vehicleFueling = false
-                            break
-                        end
+                    if PlayerData.cash < cost then
+                        SendNUIMessage({
+                            type = "warn"
+                        })
+                        vehicleFueling = false
+                        break
                     end
                     if fuel < 97 then
                         SetFuel(vehicleFueling, fuel + ((2.0 / classMultiplier) - math.random(0, 100) / 100))
@@ -278,7 +280,7 @@ CreateThread(function()
                     })
                     Wait(600)
                 end
-                if not config.standalone and cost ~= 0 then
+                if cost ~= 0 then
                     TriggerServerEvent("ND_Fuel:pay", cost)
                     cost = 0
                 end
@@ -300,16 +302,14 @@ CreateThread(function()
                     fuelCost = string.format("%.2f", cost),
                     fuelTank = "0.0"
                 })
-                if not config.standalone then
-                    if NDCore.Functions.GetSelectedCharacter().bank < cost then 
-                        SendNUIMessage({
-                            type = "warn"
-                        })
-                    end
+                if QBCore.Functions.GetPlayerData().cash < cost then 
+                    SendNUIMessage({
+                        type = "warn"
+                    })
                 end
                 Wait(800)
             end
-            if not config.standalone and cost ~= 0 then
+            if cost ~= 0 then
                 TriggerServerEvent("ND_Fuel:pay", cost)
             end
         end
@@ -341,16 +341,8 @@ CreateThread(function()
                     ClearPedTasks(ped)
                 end
                 if IsControlJustPressed(0, 47) then
-                    if not config.standalone then
-                        if NDCore.Functions.GetSelectedCharacter().bank > price then
-                            TriggerServerEvent("ND_Fuel:jerryCan", price)
-                            if HasPedGotWeapon(ped, 883325847) then
-                                SetPedAmmo(ped, 883325847, 4500)
-                            else
-                                GiveWeaponToPed(ped, 883325847, 4500, false, true)
-                            end
-                        end
-                    else
+                    if QBCore.Functions.GetSelectedCharacter().bank > price then
+                        TriggerServerEvent("ND_Fuel:jerryCan", price)
                         if HasPedGotWeapon(ped, 883325847) then
                             SetPedAmmo(ped, 883325847, 4500)
                         else

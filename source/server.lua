@@ -1,20 +1,32 @@
-NDCore = exports["ND_Core"]:GetCoreObject()
--- NDCore.Functions.VersionChecker("ND_Fuel", GetCurrentResourceName(), "https://github.com/ND-Framework/ND_Framework", "https://raw.githubusercontent.com/ND-Framework/ND_Framework/main/ND_Fuel/fxmanifest.lua")
+
+QBCore = nil
+CreateThread(function()
+    repeat
+        QBCore = exports["ND_Core"]:GetCoreObject()
+        Wait(100)
+    until QBCore ~= nil
+end)
 
 RegisterNetEvent("ND_Fuel:pay", function(amount)
     local player = source
-    NDCore.Functions.DeductMoney(math.floor(amount), player, "bank")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
-    })
+    if amount > 0 then
+        local PlayerData = QBCore.Functions.GetPlayer(player).PlayerData
+        QBCore.Functions.RemoveMoney('cash', abs(amount), "Fuel Purchase")
+        TriggerClientEvent("chat:addMessage", player, {
+            color = {0, 255, 0},
+            args = {"Success", "Paid: $" .. string.format("%.2f", amount) .. " for gas."}
+        })
+    end
 end)
 
 RegisterNetEvent("ND_Fuel:jerryCan", function(amount)
     local player = source
-    NDCore.Functions.DeductMoney(amount, player, "cash")
-    TriggerClientEvent("chat:addMessage", player, {
-        color = {0, 255, 0},
-        args = {"Success", "Paid: $" .. amount .. " for gas."}
-    })
+    if amount > 0 then
+        local PlayerData = QBCore.Functions.GetPlayer(player).PlayerData
+        QBCore.Functions.RemoveMoney('cash', abs(amount), "Fuel Purchase")
+        TriggerClientEvent("chat:addMessage", player, {
+            color = {0, 255, 0},
+            args = {"Success", "Paid: $" .. amount .. " for gas."}
+        })
+    end
 end)
