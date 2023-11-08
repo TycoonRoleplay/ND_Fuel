@@ -4,7 +4,7 @@ author "Andyyy#7666, N1K0#0001"
 description "ND Framework fuel with hose & nozle"
 version "1.0.1"
 
-fx_version "cerulean"
+fx_version 'cerulean'
 game "gta5"
 lua54 "yes"
 
